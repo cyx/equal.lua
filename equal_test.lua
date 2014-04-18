@@ -25,4 +25,10 @@ assert(false == equal({{1, 2}, {3, 3}}, {{1, 2}, {3, 4}}))
 assert(equal({a = {b = 2, c = 3}}, {a = {b = 2, c = 3}}))
 assert(false == equal({a = {b = 2, c = 4}}, {a = {b = 2, c = 3}}))
 
+-- case 6: equal at first, except second param is longer
+assert(false == equal({1, 2, 3}, {1, 2, 3, 4}))
+
+-- case 7: equal at first, except second param is longer
+assert(false == equal({a = 1}, {a = 1, b = 2}))
+
 print("All tests passed.")
