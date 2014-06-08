@@ -31,4 +31,15 @@ assert(false == equal({1, 2, 3}, {1, 2, 3, 4}))
 -- case 7: equal at first, except second param is longer
 assert(false == equal({a = 1}, {a = 1, b = 2}))
 
+-- case 8: custom __eq on metatable
+
+local always_true = { __eq = function(a, b) return true end }
+local always_false = { __eq = function(a, b) return false end }
+
+assert(true == equal(setmetatable({}, always_true),
+		     setmetatable({}, always_true)))
+
+assert(false == equal(setmetatable({}, always_false),
+		      setmetatable({}, always_false)))
+
 print("All tests passed.")
