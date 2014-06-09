@@ -21,26 +21,33 @@
 -- THE SOFTWARE.
 
 local function equal(x, y)
+	-- Compare by primitive equality first.
+	if x == y then return true end
+
+	-- If a custom __eq has been defined, trust == even
+	-- for tables.
+	local mtx, mty = getmetatable(x), getmetatable(y)
+	if (mtx and mtx.__eq) or (mty and mty.__eq) then return false end
+
+	-- If one of the values isn't a table, and the identity
+	-- is not the same, they are not equal.
 	local t1, t2 = type(x), type(y)
 
-	-- Shortcircuit if types not equal.
-	if t1 ~= t2 then return false end
+	if t1 ~= 'table' or t2 ~= 'table' then return false end
 
-	-- For primitive types, direct comparison works.
-	if t1 ~= 'table' and t2 ~= 'table' then return x == y end
 
-	-- Since we have two tables, make sure both have the same
-	-- length so we can avoid looping over different length arrays.
-	if #x ~= #y then return false end
-
-	-- Case 1: check over all keys of x
-	for k,v in pairs(x) do
-		if not equal(v, y[k]) then return false end
+	-- Check that both tables contain the same keys.
+	for k in pairs(x) do
+		if y[k] == nil then return false end
 	end
 
-	-- Case 2: check over `y` this time.
-	for k,v in pairs(y) do
-		if not equal(v, x[k]) then return false end
+	for k in pairs(y) do
+		if x[k] == nil then return false end
+	end
+
+	-- Compare values on each key.
+	for k, v in pairs(x) do
+		if not equal(v, y[k]) then return false end
 	end
 
 	return true
